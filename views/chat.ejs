@@ -1,0 +1,248 @@
+
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<link href="/css/chatStyle.css" rel="stylesheet">
+<!------ Include the above in your HEAD tag ---------->
+<script src="/socket.io/socket.io.js"></script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<div class="container app">
+  <div class="row app-one">
+   
+
+    <div class="col-sm-8 conversation" style="width: 100%;">
+      <div class="row heading">
+        <div class="col-sm-2 col-md-1 col-xs-3 heading-avatar">
+          <div class="heading-avatar-icon">
+            <img src="https://bootdey.com/img/Content/avatar/avatar6.png">
+          </div>
+        </div>
+        <div class="col-sm-8 col-xs-7 heading-name" id="topDiv">
+      
+          <a class="heading-name-meta">제목: <%=title%>
+          </a>
+       
+      
+     
+        </div>
+        <div class="col-sm-1 col-xs-1  heading-dot pull-right">
+          <a href="/chat/room">Room Out</a>
+        </div>
+      </div>
+
+      <div class="row message" id="conversation">
+        <div class="row message-previous">
+          <div class="col-sm-12 previous">
+            <p>채팅창에 오신것을 환영합니다</p>
+          </div>
+        </div>
+        <%if(chats){%>
+        <%for(let chat of chats){%>
+          <%if(chat.userChat==='system'){%>
+          <div class='row message-previous'>
+            <div class='col-sm-12 previous'>
+             <%=chat.chat%>
+            </div>
+          </div>
+          <br><br>
+          <%}else if(chat.userChat==='user'&&chat.userId===userId){%>
+          <div class='col-sm-12 message-main-sender' style="height: 50px;">
+         
+            <div class='sender'>
+              <div class='message-text'>
+                <%=chat.chat%>
+            
+              </div><span class='message-time pull-right'>
+                  <%=chat.nick%>
+                </span></div></div> <br><br>
+         <%}else{%>
+          <div class='col-sm-12 message-main-receiver' style="height: 50px;">
+             
+            <div class='receiver'>
+              <div class='message-text'>
+                <%=chat.chat%>
+
+              </div><span class='message-time pull-right'>
+                  <%=chat.nick%>
+                </span></div></div> <br><br>
+
+          <%}%>
+    <%}%>
+        <%}%>
+      </div>
+   
+  
+         <!-- <form name="testForm"> 
+
+          <div class="col-sm-9 col-xs-9 reply-main">
+            <textarea class="form-control" rows="1" name="chat" id="comment"></textarea>
+          </div>
+          
+       <div class="col-sm-1 col-xs-1 reply-send">
+    
+        <i class="fa fa-send fa-2x" aria-hidden="true" id="btn1">
+
+
+        </i>
+    
+        </div>
+    
+      </form> -->
+      <div class="row reply">
+        <div class="col-sm-1 col-xs-1 reply-emojis">
+          <i class="fa fa-smile-o fa-2x"></i>
+        </div>
+        <div class="col-sm-9 col-xs-9 reply-main">
+          <textarea class="form-control" rows="1" id="comment"></textarea>
+        </div>
+        <div class="col-sm-1 col-xs-1 reply-recording">
+          <i class="fa fa-microphone fa-2x" aria-hidden="true"></i>
+        </div>
+        <div class="col-sm-1 col-xs-1 reply-send">
+          <i class="fa fa-send fa-2x" aria-hidden="true" id="btn1"></i>
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+</div> 
+
+
+<script>
+var userId='<%=userId%>';
+var nick='<%=nick%>';
+var roomId='<%=room.id%>';
+var socket = io.connect('/chats', {
+      path: '/socket.io'
+    });
+    socket.on('join', function (data) {
+      personFun(0);
+     var str="";
+    
+      str+="<div class='row message-previous'>"+
+            "<div class='col-sm-12 previous'>"+
+              "<p>"+ data.chat+"</p>"+
+            "</div>"+
+
+            
+          "</div>";
+          console.log(str);
+          $("#conversation").append(str);
+     
+    });
+    socket.on('exit', function (data) {
+      personFun(0);
+     var str="";
+      str+=""+
+          "<div class='row message-previous'>"+
+            "<div class='col-sm-12 previous'>"+
+              data.chat+
+            "</div>"+
+          "</div>";
+          $("#conversation").append(str);
+    });
+    socket.on('chats', function (data) {
+  
+
+    
+      var div = "<div class='row message-body'>";
+      console.log(userId);
+      console.log(data.userId);
+      if (data.userId+""===userId) {
+
+      div+="<div class='col-sm-12 message-main-sender' style='height: 50px';>"+
+            
+            "<div class='sender'>"+
+              "<div class='message-text'>"+
+              data.chat+              
+              "</div><span class='message-time pull-right'>"+
+                  data.nickz+"</span></div></div> ";
+       
+      } else {
+       
+        div+="<div class='col-sm-12 message-main-receiver' style='height: 50px';>"+
+            
+            "<div class='receiver'>"+
+              "<div class='message-text'>"+
+              data.chat+ 
+            
+              "</div><span class='message-time pull-right'>"+
+                  data.nickz+"</span></div></div> ";
+       
+      }
+
+
+      $('#conversation').append(div);
+    });
+    function personFun(fir){
+      $.ajax({
+        url:'/chat/chatPerson/'+roomId,
+        type:'GET',
+        success:function(data){
+          console.log(data);
+          var sum=Number(data)+fir;
+          str=" <a class='heading-name-meta' id='person'>인원:"+sum+" </a>";
+   
+          $('#person').remove();
+          $('#topDiv').append(str);
+        }
+      });
+    }
+    
+    function inputEvn(){
+      var chat = $("#comment").val() ;
+        if ( chat ==="") {
+			alert("Please enter your chat.");
+			return ;
+    }
+
+
+   
+    $.ajax({
+      url:'/chat/chatCreate/'+roomId,
+      type:'POST',
+      data : {chat:chat,
+        userq:'#{userq}',
+      
+      },
+      success:function(){
+       $("#comment").val("");
+      }
+
+    });
+      }
+      
+    $(document).ready(function (){
+      personFun(1);
+      $("#btn1").on("click",function(e){
+        inputEvn();       
+      });
+      $("#comment").keydown(function(key) {
+                //키의 코드가 13번일 경우 (13번은 엔터키)
+                if (key.keyCode == 13) {
+                  inputEvn();
+                }
+            });
+
+          });
+
+
+    // document.querySelector('#chat-form').addEventListener('submit', function (e) {
+    //   e.preventDefault();
+    //   if (e.target.chat.value) {
+    //     var xhr = new XMLHttpRequest();
+    //     xhr.onload = function () {
+    //       if (xhr.status === 200) {
+    //         e.target.chat.value = '';
+    //       } else {
+    //         console.error(xhr.responseText);
+    //       }
+    //     };
+    //     xhr.open('POST', 'http://localhost:8005/chat/chatCreate/#{room.id}');
+    //     xhr.setRequestHeader('Content-Type', 'application/json');
+    //     xhr.send(JSON.stringify({ chat: this.chat.value,userq:'#{userq}'}));
+    //   }
+    // });
+</script>

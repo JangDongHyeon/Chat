@@ -1,0 +1,242 @@
+<% include ./header.ejs%>
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script src="/socket.io/socket.io.js"></script>
+<!------ Include the above in your HEAD tag ---------->
+<script>
+
+
+    $(document).ready(function(){
+$("#mytable #checkall").click(function () {
+        if ($("#mytable #checkall").is(':checked')) {
+            $("#mytable input[type=checkbox]").each(function () {
+                $(this).prop("checked", true);
+            });
+
+        } else {
+            $("#mytable input[type=checkbox]").each(function () {
+                $(this).prop("checked", false);
+            });
+        }
+    });
+    
+    $("[data-toggle=tooltip]").tooltip();
+
+    $('#newRoom_bt').click(function(){
+     location.href='/chat/room/create';
+    });
+
+});
+
+</script>
+
+<div class="container">
+  <button type="button" class="btn btn-primary" id="newRoom_bt">newRoom</button>
+	<div class="row">
+		
+        
+        <div class="col-md-12">
+        <h4>Bootstrap Snipp for Datatable</h4>
+        <div class="table-responsive">
+
+                
+              <table id="mytable" class="table table-bordred table-striped">
+                   
+                   <thead>
+                   
+                   
+                 
+                    <th>Title</th>
+                    <th>Passowrd</th>
+                     <th>Personnel</th>
+                  
+                     <th>Onwer</th>
+                     <th>Language</th>
+                      <th>Date</th>
+                      <th>입장</th>
+                      
+                   </thead>
+    <tbody id="chatRommTable">
+
+<!--    
+        <%for(let room of rooms){%>
+          <tr>
+           <td><%=room.title%></td>
+          <td><%=room.password?'Secret Room':'Open Room'%></td>
+          <td><%=room.max%></td>
+          <td><%=room.owner%></td>
+          <td><%=room.language?'Kor':'Eng'%></td>
+          <td><%=room.updatedAt%></td> 
+           <td><button id="con" data-password="<%=room.password%>" data-id="<%=room.id%>">Join</button></td>
+        </tr>
+          <%}%> -->
+   
+    
+    </tbody>
+        
+</table>
+
+<div class="clearfix"></div>
+<ul class="pagination pull-right">
+  <li class="disabled"><a href="#"><span class="glyphicon glyphicon-chevron-left"></span></a></li>
+  <li class="active"><a href="#">1</a></li>
+  <li><a href="#">2</a></li>
+  <li><a href="#">3</a></li>
+  <li><a href="#">4</a></li>
+  <li><a href="#">5</a></li>
+  <li><a href="#"><span class="glyphicon glyphicon-chevron-right"></span></a></li>
+</ul>
+                
+            </div>
+            
+        </div>
+	</div>
+</div>
+
+<% if(roomError)%>
+    <div class="alert-warning">  <%=roomError%>  </div>
+   
+
+
+ 
+
+<!-- 
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-body">
+            <h2>채팅방 생성</h2>
+            <form class="form-horizontal" action="/action_page.php">
+              <div class="form-group">
+                <label class="control-label col-sm-2" for="title">Title:</label>
+                <div class="col-sm-10">
+                  <input type="text" class="form-control" id="title" placeholder="Enter Title" name="title">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label col-sm-2" for="pwd">Password:</label>
+                <div class="col-sm-10">          
+                  <input type="password" class="form-control" id="pwd" placeholder="비밀번호(없으면 공개방)" name="pwd">
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="control-label col-sm-2" for="max"> Personnel:</label>
+                <div class="col-sm-10">          
+                  <input type="text" class="form-control" id="max" placeholder="Enter Personnel" name="max">
+                </div>
+              </div>
+         
+              <div class="form-group">
+                <label class="control-label col-sm-2"> Language:</label>
+                <div class="col-sm-10"> 
+                    <div class="radio">         
+                  <input type="radio" class="form-control" name="language">Korean
+                  <input type="radio" class="form-control" name="language">English
+                  </div>
+                </div>
+              </div>
+          
+              <div class="form-group">        
+                <div class="col-sm-offset-2 col-sm-10">
+                  <button type="submit" class="btn btn-default">Submit</button>
+                </div>
+              </div>
+            </form>
+          
+      
+        </div>
+   /.modal-content 
+  </div>
+ /.modal-dialog 
+    </div>
+    
+  </div> -->
+    
+  <script>(src='/socket.io/socket.io.js')</script>
+    <script>
+ var socket = io.connect('/room', {
+      path: '/socket.io'
+    });
+    // console.log(socket);
+    // socket.on('newRoom', function (data) {
+    //   alert(data);
+    //   console.log(data);
+    //   var tr = document.createElement('tr');
+    //   var td = document.createElement('td');
+    //   td.textContent = data.title;
+    //   tr.appendChild(td);
+    //   td = document.createElement('td');
+    //   td.textContent = data.password ? '비밀방' : '공개방';
+    //   tr.appendChild(td);
+    //   td = document.createElement('td');
+    //   td.textContent = data.max;
+    //   tr.appendChild(td);
+    //   td = document.createElement('td');
+    //   td.textContent = data.owner;
+    //   tr.appendChild(td);
+    //   td = document.createElement('td');
+    //   var button = document.createElement('button');
+    //   button.textContent = '입장';
+    //   button.dataset.password = data.password ? 'true' : 'false';
+    //   button.dataset.id = data._id;
+    //   button.addEventListener('click', addBtnEvent);
+    //   td.appendChild(button);
+    //   tr.appendChild(td);
+    //   tr.dataset.id = data._id;
+    //   $('#chatRommTable').appendChild(tr);
+    // });
+    // socket.on('removeRoom', function (data) {
+    //   document.querySelectorAll('tbody tr').forEach(function (tr) {
+    //     if (tr.dataset.id === data) {
+    //       tr.parentNode.removeChild(tr);
+    //     }
+    //   });
+    // });
+   
+        $(document).ready(function(){
+      
+            $.ajax({
+                url:'/chat/roomlist',
+                type:'get',
+      
+                success:function(data){
+                    var str="";
+                  
+                    $(data).each(function(key,item){
+                     
+                        str+="<tr>"+
+                            "<td>"+item.title+"</td>";
+                            if(item.password)
+                                 str+="<td>Secret room</td>";
+                            else
+                                 str+="<td>Open room</td>";
+                           str+= "<td>"+item.max+"</td>"+
+                           "<td>"+item.owner+"</td>";
+                           
+                   
+                            if(item.language)
+                                str+="<td>Korean</td>";
+                            else
+                                str+="<td>English</td>";
+
+                            str+="<td>"+item.createdAt+"</td>";
+                            str+='<td><button class="btn btn-danger" onClick="doRoad('+item.id+","+item.password+')">입장</button></td></tr>';
+                    });
+                    console.log(str);
+                    $('#chatRommTable').append(str);
+                }
+            });
+        });
+     
+        function doRoad(id,pwdBool){
+      
+          if(pwdBool){
+          var password =  prompt("PASSWD 입력","");          
+          location.href='/chat/room/'+id+'?password='+password;
+          }else{
+            location.href='/chat/room/'+id;
+          }
+        }
+     
+</script>
+<% include ./footer.ejs%>
